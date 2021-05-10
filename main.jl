@@ -16,4 +16,4 @@ include("input/qlearning.jl")
 game = model.init_game();
 
 # Compute equilibrium
-game = qlearning.simulate_game(game, 1e5, 1e7);
+game_equilibrium = qlearning.simulate_game(game);

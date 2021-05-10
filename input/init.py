@@ -7,9 +7,9 @@ from itertools import product
 from scipy.optimize import fsolve
 
 
-class Algorithms(object):
+class model(object):
     """
-    Algorithms
+    model
 
     Attributes
     ----------
@@ -37,6 +37,7 @@ class Algorithms(object):
 
     def __init__(self, **kwargs):
         """Initialize game with default values"""
+        # Default properties
         self.n = kwargs.get('n', 2)
         self.alpha = kwargs.get('alpha', 0.15)
         self.beta = kwargs.get('beta', 4e-6)
@@ -46,7 +47,10 @@ class Algorithms(object):
         self.a0 = kwargs.get('a0', 0)
         self.mu = kwargs.get('mu', 0.25)
         self.k = kwargs.get('k', 15)
-        self.stable = kwargs.get('stable', 0)
+        self.tstable = kwargs.get('tstable', 1e5)
+        self.tmax = kwargs.get('tstable', 1e7)
+
+        # Derived properties
         self.sdim, self.s0 = self.init_state()
         self.p_minmax = self.compute_p_competitive_monopoly()
         self.A = self.init_actions()

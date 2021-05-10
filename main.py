@@ -9,11 +9,11 @@ Code
     myself: https://matteocourthoud.github.io/
 """
 
-from input.model import Algorithms
+from input.init import model
 from input.qlearning import simulate_game
 
 # Init algorithm
-game = Algorithms()
+game = model()
 
 # Compute equilibrium
-game_equilibrium = simulate_game(game, 1e5, 1e7)
+game_equilibrium = simulate_game(game)

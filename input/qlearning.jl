@@ -2,14 +2,14 @@
 
 module qlearning
 
+    using JSON3
+
     export simulate_game
 
-    include("model.jl")
-
-    function get_actions(game, s, t)
+    function get_actions(game::Main.init.model, s::Array{Int8,1}, t::Int64)::Array{Int8,1}
         """Get actions"""
-        a = Int.(zeros(1, game.n));
-        pr_explore = exp(- t * game.beta);
+        a = Int8.(zeros(game.n));
+        pr_explore::Float64 = exp(- t * game.beta);
         e = pr_explore .> rand(1,3);
         for n = 1:game.n
             if e[n]
@@ -21,7 +21,7 @@ module qlearning
         return a
     end
 
-    function update_Q(game, profits, s, s1, a)
+    function update_Q(game::Main.init.model, profits::Array{Float32,1}, s::Array{Int8,1}, s1::Array{Int8,1}, a::Array{Int8,1}, stable::Int64)::Tuple{Array{Float32,4},Int64}
         """Update Q function"""
         for n=1:game.n
             old_value = game.Q[n, s[1], s[2], a[n]];
@@ -32,20 +32,20 @@ module qlearning
             # Check stability
             new_argmax = argmax(game.Q[n, s[1], s[2], :])
             same_argmax = Int8(old_argmax == new_argmax);
-            game.stable = (game.stable + same_argmax) * same_argmax
+            stable = (stable + same_argmax) * same_argmax
         end
-        return game
+        return game.Q, stable
     end
 
-    function check_convergence(game, t, tstable, tmax)
+    function check_convergence(game::Main.init.model, t::Int64, stable::Int64)::Bool
         """Check if game converged"""
-        if rem(t, tstable)==0
-            print("\nstable = ", game.stable)
+        if rem(t, game.tstable)==0
+            print("\nstable = ", stable)
         end
-        if game.stable > tstable
+        if stable > game.tstable
             print("\nConverged!")
             return true;
-        elseif t==tmax
+        elseif t==game.tmax
             print("\nERROR! Not Converged!")
             return true;
         else
@@ -53,17 +53,25 @@ module qlearning
         end
     end
 
+    function export_game(game::Main.init.model)
+        """Export game"""
+        open("output/games/game1.json", "w") do io
+            JSON3.write(io, game)
+        end
+    end
+
     # Simulate game
-    function simulate_game(game, tstable, tmax)
+    function simulate_game(game::Main.init.model)::Main.init.model
         s = game.s0;
+        stable = 0
         # Iterate until convergence
-        for t=1:tmax
+        for t=1:game.tmax
             a = get_actions(game, s, t)
             profits = game.PI[a[1], a[2], :]
             s1 = a
-            game = update_Q(game, profits, s, s1, a)
+            game.Q, stable = update_Q(game, profits, s, s1, a, stable)
             s = s1;
-            if check_convergence(game, t, tstable, tmax)
+            if check_convergence(game, t, stable)
                 break
             end
         end

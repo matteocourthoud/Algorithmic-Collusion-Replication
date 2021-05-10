@@ -19,7 +19,7 @@ def pick_strategies(game, s, t):
     return a
 
 
-def update_q(game, s, a, s1, pi):
+def update_q(game, s, a, s1, pi, stable):
     """Update Q matrix"""
     for n in range(game.n):
         subj_state = (n,) + tuple(s) + (a[n],)
@@ -31,45 +31,35 @@ def update_q(game, s, a, s1, pi):
         # Check stability
         new_argmax = np.argmax(game.Q[(n,) + tuple(s)])
         same_argmax = (old_argmax == new_argmax)
-        game.stable = (game.stable + same_argmax) * same_argmax
-    return game
+        stable = (stable + same_argmax) * same_argmax
+    return game.Q, stable
 
 
-def check_convergence(game, t, tstable, tmax):
+def check_convergence(game, t, stable):
     """Check if game converged"""
-    if (t % tstable == 0) & (t > 0):
+    if (t % game.tstable == 0) & (t > 0):
         sys.stdout.write("\rt=%i" % t)
         sys.stdout.flush()
-    if game.stable > tstable:
+    if stable > game.tstable:
         print('Converged!')
         return True
-    if t == tmax:
+    if t == game.tmax:
         print('ERROR! Not Converged!')
         return True
     return False
 
 
-def simulate_game(game, tstable=1e5, tmax=1e7):
-    """
-    Simulate game
-
-    Parameters
-    -----
-    game: game
-        the game
-    tmax: int
-        maximum number of iterations performed
-    tstable: int
-        minimum number of iterations without updates needed to consider the game stable
-    """
+def simulate_game(game):
+    """Simulate game"""
     s = game.s0
+    stable = 0
     # Iterate until convergence
-    for t in range(int(tmax)):
+    for t in range(int(game.tmax)):
         a = pick_strategies(game, s, t)
         pi = game.PI[tuple(a)]
         s1 = a
-        game = update_q(game, s, a, s1, pi)
+        game.Q, stable = update_q(game, s, a, s1, pi, stable)
         s = s1
-        if check_convergence(game, t, tstable, tmax):
+        if check_convergence(game, t, stable):
             break
     return game

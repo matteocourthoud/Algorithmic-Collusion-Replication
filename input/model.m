@@ -16,7 +16,8 @@ classdef model
         a = 2                   % Value of the product
         a0 = 0                  % Value of the outside option
         k = 15                  % Dimension of the price grid
-        stable = 0              % Number of stable periods
+        tstable = 1e5           % Number of iterations needed for stability
+        tmax = 1e7              % Maximum number of iterations
         
         % Derived properties
         sdim                    % Dimension of the state

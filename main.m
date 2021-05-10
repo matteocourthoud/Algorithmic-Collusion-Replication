@@ -13,4 +13,4 @@ Code
 game = model.init(model);
 
 % Compute equilibrium
-game_equilibrium = qlearning.simulate_game(game, 1e5, 1e7);
+game_equilibrium = qlearning.simulate_game(game);
