@@ -10,7 +10,7 @@ Code
 %}
 
 % Init algorithm
-game = model.init(model);
+game = init.init(model);
 
 % Compute equilibrium
 game_equilibrium = qlearning.simulate_game(game);

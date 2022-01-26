@@ -9,11 +9,11 @@ Code
     myself: https://matteocourthoud.github.io/
 =#
 
-include("input/model.jl")
+include("input/init.jl")
 include("input/qlearning.jl")
 
 # Init algorithm
-game = model.init_game();
+game = init.init_game();
 
 # Compute equilibrium
 game_equilibrium = qlearning.simulate_game(game);

@@ -2,8 +2,6 @@
 
 module qlearning
 
-    using JSON3
-
     export simulate_game
 
     function get_actions(game::Main.init.model, s::Array{Int8,1}, t::Int64)::Array{Int8,1}
@@ -62,7 +60,7 @@ module qlearning
 
     # Simulate game
     function simulate_game(game::Main.init.model)::Main.init.model
-        s = game.s0;
+        s = Int8.([1,1,1]);;
         stable = 0
         # Iterate until convergence
         for t=1:game.tmax

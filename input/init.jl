@@ -22,8 +22,6 @@ module init
         tmax::Int32 = 1e7                       # Maximum number of iterations
 
         """Derived Properties"""
-        sdim::Array{Int8,1} = zeros(1)          # Dimension of the state
-        s0::Array{Int8,1} = zeros(1)            # Initial state
         A::Array{Float32,1} = zeros(1)          # Action space
         p_minmax::Array{Float32,2} = zeros(1,1) # Minimum and maximum prices
         PI::Array{Float32,3} = zeros(1,1,1)     # Profit matrix
@@ -73,13 +71,6 @@ module init
         return A
     end
 
-    function init_state(game::model)::Tuple{Array{Int8,1},Array{Int8,1}}
-        """Get state dimension and initial state"""
-        sdim = [game.k, game.k];
-    	s0 = Int8.([1,1,1]);
-        return sdim, s0
-    end
-
     function compute_profits(game::model, p::Array{Float32,1})::Array{Float32,1}
         """Compute payoffs"""
         d = demand(game, p);
@@ -114,7 +105,6 @@ module init
         game = model();
         game.p_minmax = compute_p_competitive_monopoly(game);
         game.A = init_actions(game);
-        game.sdim, game.s0 = init_state(game);
         game.PI = init_PI(game);
         game.Q = init_Q(game);
         return game
