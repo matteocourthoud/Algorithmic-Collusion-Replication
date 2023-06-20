@@ -65,9 +65,10 @@ module init
 
     function init_actions(game::model)::Array{Float32,1}
         """Get action space of the firms"""
-        a = range(min(game.p_minmax[:,1]...), max(game.p_minmax[:,2]...), length=game.k-2);
-        delta = a[2] - a[1];
-        A = collect(a[1]-delta:delta:a[end]+2*delta)
+        p_bert = minimum(game.p_minmax[:,1]) 
+        p_monop = maximum(game.p_minmax[:,2])
+        p_range_pad = game.ξ * (p_monop - p_bert)
+        A = collect(range(p_bert - p_range_pad, p_monop + p_range_pad, length=game.k))
         return A
     end
 
