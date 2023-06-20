@@ -20,6 +20,7 @@ module init
         k::Int8 = 15                            # Dimension of the price grid
         tstable::Int32 = 1e5                    # Number of iterations needed for stability
         tmax::Int32 = 1e7                       # Maximum number of iterations
+        ξ::Float32 = 0.1
 
         """Derived Properties"""
         A::Array{Float32,1} = zeros(1)          # Action space
