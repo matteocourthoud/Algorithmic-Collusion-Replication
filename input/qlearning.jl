@@ -19,7 +19,7 @@ module qlearning
         return a
     end
 
-    function update_Q(game::Main.init.model, profits::Array{Float32,1}, s::Array{Int8,1}, s1::Array{Int8,1}, a::Array{Int8,1}, stable::Int64)::Tuple{Array{Float32,4},Int64}
+    function update_Q(game::Main.init.model, profits::Array{Float32,1}, s::Array{Int8,1}, s1::Array{Int8,1}, a::Array{Int8,1}, stable::Vector{Int64})::Tuple{Array{Float32,4},Vector{Int64}}
         """Update Q function"""
         for n=1:game.n
             old_value = game.Q[n, s[1], s[2], a[n]];
@@ -30,21 +30,22 @@ module qlearning
             # Check stability
             new_argmax = argmax(game.Q[n, s[1], s[2], :])
             same_argmax = Int8(old_argmax == new_argmax);
-            stable = (stable + same_argmax) * same_argmax
+            stable[n] = (stable[n] + same_argmax) * same_argmax
         end
         return game.Q, stable
     end
 
-    function check_convergence(game::Main.init.model, t::Int64, stable::Int64)::Bool
+    function check_convergence(game::Main.init.model, t::Int64, stable::Vector{Int64})::Bool
         """Check if game converged"""
         if rem(t, game.tstable)==0
-            print("\nstable = ", stable)
+            println("stable = ", stable)
         end
-        if stable > game.tstable
-            print("\nConverged!")
+        if all(stable .> game.tstable)
+            println("Converged at $t !")
+            println("stable = ", stable)
             return true;
         elseif t==game.tmax
-            print("\nERROR! Not Converged!")
+            println("ERROR! Not Converged!")
             return true;
         else
             return false;
@@ -61,7 +62,7 @@ module qlearning
     # Simulate game
     function simulate_game(game::Main.init.model)::Main.init.model
         s = Int8.([1,1,1]);;
-        stable = 0
+        stable = [0,0]
         # Iterate until convergence
         for t=1:game.tmax
             a = get_actions(game, s, t)
